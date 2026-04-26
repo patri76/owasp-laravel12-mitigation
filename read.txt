@@ -1,0 +1,19 @@
+
+La vulnerabilità è in:
+
+app/Http/Controllers/ArticleController.php
+
+credo sia SQL Injection, perché c’è: whereRaw(...)
+
+Ho clonato progetto, creato database e fatto seed
+
+Nel progetto ho trovato una vulnerabilità di sicurezza all’interno del controller ArticleController, in particolare nel metodo search().
+Ho trovato questa query:
+
+$articles = Article::whereRaw("title like '%{$request->search}%'")->get();
+
+Questa implementazione è vulnerabile perché utilizza whereRaw(), che permette di inserire direttamente l’input dell’utente all’interno della query SQL senza alcun controllo.
+
+Credo sia corretto dire che l’uso di query raw espone l’applicazione a SQL Injection:un attaccante può inserire codice SQL malevolo nel campo di ricerca per manipolare la query, accedere a dati sensibili o modificarli.
+
+Ho corretto la vulnerabilità sostituendo l’uso di query raw con query sicure tramite Eloquent. Questo protegge il database da attacchi di tipo injection.
