@@ -1,5 +1,5 @@
 
-La vulnerabilità è in:
+Ho trovato una vulnerabilità in:
 
 app/Http/Controllers/ArticleController.php
 
@@ -17,3 +17,5 @@ Questa implementazione è vulnerabile perché utilizza whereRaw(), che permette 
 Credo sia corretto dire che l’uso di query raw espone l’applicazione a SQL Injection:un attaccante può inserire codice SQL malevolo nel campo di ricerca per manipolare la query, accedere a dati sensibili o modificarli.
 
 Ho corretto la vulnerabilità sostituendo l’uso di query raw con query sicure tramite Eloquent. Questo protegge il database da attacchi di tipo injection.
+
+spero sia corretto.

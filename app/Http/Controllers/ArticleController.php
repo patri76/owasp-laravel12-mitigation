@@ -25,7 +25,7 @@ class ArticleController extends Controller
 
     public function search(Request $request)
     {
-        // SECURE - mitigazione SQL Injection
+        // SECURE - la mitigazione SQL Injection
         $articles = Article::where('title', 'LIKE', '%' . $request->search . '%')
             ->orWhere('content', 'LIKE', '%' . $request->search . '%')
             ->get();
