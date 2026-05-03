@@ -3,6 +3,7 @@
 namespace App\Actions\Fortify;
 
 use App\Models\User;
+use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Laravel\Fortify\Contracts\ResetsUserPasswords;
@@ -22,8 +23,13 @@ class ResetUserPassword implements ResetsUserPasswords
             'password' => $this->passwordRules(),
         ])->validate();
 
+        $salt = Str::random(32);
+
         $user->forceFill([
-            'password' => Hash::make($input['password']),
+            'password' => Hash::make(
+                $input['password'] . $salt . config('app.pepper')
+            ),
+            'salt' => $salt,
         ])->save();
     }
 }

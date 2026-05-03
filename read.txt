@@ -1,4 +1,35 @@
+es 2
 
+Ho creato la migrazione per aggiungere la colonna salt alla tabella users.
+
+Ho aggiunto nel file .env il valore segreto PEPPER.
+
+Ho aggiunto in config/app.php: 'pepper' => env('PEPPER'),
+
+Ho modificato il model User.php, aggiungendo salt nei campi $fillable.
+
+Ho modificato CreateNewUser.php:
+    * genero un salt casuale con Str::random(32)
+    * salvo la password con: Hash::make($password . $salt . config('app.pepper'))
+
+Ho creato AuthenticateUser.php per personalizzare il login: recupero l’utente tramite email, poi  prendo il suo salt, ricostruisco password + salt + pepper, verifico con Hash::check()
+
+Per risolvere il problema dei vecchi utenti registrati :
+
+Ho modificato ResetUserPassword.php, così  quando l’utente reimposta la password, genero un nuovo salt e salvo la nuova password con salt e pepper
+
+Ho creato le viste che non esistevano:
+forgot-password.blade.php e reset-password.blade.php
+Mi sono fermata qui all’invio della mail per resettare password.
+
+
+Il sistema ora salva le password in modo più sicuro usando:
+
+password + salt + pepper - hash
+
+-------
+
+es 1.
 Ho trovato una vulnerabilità in:
 
 app/Http/Controllers/ArticleController.php
