@@ -1,3 +1,10 @@
+es secure design
+Ho mitigato la vulnerabilità OWASP A04 Insecure Design:
+- protetto le route admin con middleware admin
+- ho sostituito GET sensibili con POST
+- protetto commenti con middleware block.suspicious
+
+----------
 es 2
 
 Ho creato la migrazione per aggiungere la colonna salt alla tabella users.
