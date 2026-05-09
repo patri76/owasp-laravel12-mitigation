@@ -1,4 +1,13 @@
-mitigato A08:
+fatto prova con login sbagliato.
+nel log:
+mac@Air-di-MAC owasp-top10-hack-mitigation-blog-laravel12 % tail -n 20 storage/logs/laravel.log
+[2026-05-09 19:59:31] local.WARNING: Failed login attempt {"email":"user@example.com","ip":"127.0.0.1"}
+mac@Air-di-MAC owasp-top10-hack-mitigation-blog-laravel12 %
+
+tail -n 20 storage/logs/laravel.log
+----
+
+HO mitigato A08:
 aggiornato dipendenze vulnerabili (firebase/php-jwt)
 verificato l’integrità con composer audit
 aggiunto uno script automatico di controllo sicurezza
