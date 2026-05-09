@@ -1,3 +1,18 @@
+per Vulnerable and Outdated Components ho modificato composer.js
+
+
+----
+
+La vulnerabilità rientra in OWASP A05:2021 - Security Misconfiguration.
+Nel progetto Laravel il debug mode era configurato in modo insicuro. Se APP_DEBUG è impostato su true in ambiente di produzione, l’applicazione può mostrare stack trace, percorsi dei file, variabili di ambiente e dettagli interni utili a un attaccante.
+
+Mitigazione:
+- disattivato il debug mode impostando APP_DEBUG=false;
+- configurato l’ambiente di produzione con APP_ENV=production;
+- aggiornato la configurazione di esempio .env.example;
+
+In questo modo, eventuali errori non mostrano più informazioni sensibili all’utente finale.
+
 es secure design
 Ho mitigato la vulnerabilità OWASP A04 Insecure Design:
 - protetto le route admin con middleware admin
