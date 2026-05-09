@@ -1,3 +1,9 @@
+mitigato A08:
+aggiornato dipendenze vulnerabili (firebase/php-jwt)
+verificato l’integrità con composer audit
+aggiunto uno script automatico di controllo sicurezza
+-----
+
 per Vulnerable and Outdated Components ho modificato composer.js
 
 
