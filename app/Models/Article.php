@@ -11,15 +11,21 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 class Article extends Model
 {
     use HasFactory;
+//protected $guarded = [];
+    protected $fillable = [
+        'title',
+        'content',
+        'published',
+        'user_id',
+    ];
 
-    protected $guarded =[];
-
-    public function user(){
+    public function user()
+    {
         return $this->belongsTo(User::class);
     }
 
     public function comments(): HasMany
     {
-        return $this->hasMany(Comment::class)->orderBy("created_at","desc");
+        return $this->hasMany(Comment::class)->orderBy('created_at', 'desc');
     }
 }

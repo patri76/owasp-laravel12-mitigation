@@ -4,12 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Models\Article;
 use Illuminate\Http\Request;
-use App\Services\HtmlFilterService;
 use Illuminate\Support\Facades\Auth;
-
+//esercitazione framework security
 class ArticleController extends Controller
 {
-    public function index(Request $request, HtmlFilterService $htmlFilterService)
+    public function index(Request $request)
     {
         $articles = Article::latest()
             ->where('published', true)
@@ -25,9 +24,18 @@ class ArticleController extends Controller
 
     public function search(Request $request)
     {
-        // SECURE - la mitigazione SQL Injection
-        $articles = Article::where('title', 'LIKE', '%' . $request->search . '%')
-            ->orWhere('content', 'LIKE', '%' . $request->search . '%')
+        $validated = $request->validate([
+            'search' => 'nullable|string|max:255',
+        ]);
+
+        $search = $validated['search'] ?? '';
+
+        $articles = Article::where('published', true)
+            ->where(function ($query) use ($search) {
+                $query->where('title', 'LIKE', '%' . $search . '%')
+                    ->orWhere('content', 'LIKE', '%' . $search . '%');
+            })
+            ->latest()
             ->get();
 
         return view('articles.index', compact('articles'));
@@ -35,6 +43,10 @@ class ArticleController extends Controller
 
     public function show(Article $article, Request $request)
     {
+        if (!$article->published && $article->user_id !== Auth::id()) {
+            abort(403);
+        }
+
         if ($request->wantsJson()) {
             return response()->json($article);
         }
@@ -47,13 +59,16 @@ class ArticleController extends Controller
         return view('articles.create');
     }
 
-    public function store(Request $request/*, HtmlFilterService $htmlFilterService */)
+    public function store(Request $request)
     {
-        $articleData = $request->all();
+        $articleData = $request->validate([
+            'title' => 'required|string|max:255',
+            'content' => 'required|string|max:5000',
+            'published' => 'nullable|boolean',
+        ]);
 
-        if (!key_exists('user_id', $articleData)) {
-            $articleData['user_id'] = Auth::id();
-        }
+        $articleData['user_id'] = Auth::id();
+        $articleData['published'] = $request->boolean('published');
 
         $article = Article::create($articleData);
 
@@ -66,12 +81,26 @@ class ArticleController extends Controller
 
     public function edit(Article $article)
     {
+        if ($article->user_id !== Auth::id()) {
+            abort(403);
+        }
+
         return view('articles.edit', compact('article'));
     }
 
-    public function update(Request $request, Article $article/*, HtmlFilterService $htmlFilterService */)
+    public function update(Request $request, Article $article)
     {
-        $articleData = $request->all();
+        if ($article->user_id !== Auth::id()) {
+            abort(403);
+        }
+
+        $articleData = $request->validate([
+            'title' => 'required|string|max:255',
+            'content' => 'required|string|max:5000',
+            'published' => 'nullable|boolean',
+        ]);
+
+        $articleData['published'] = $request->boolean('published');
 
         $article->update($articleData);
 
@@ -84,12 +113,17 @@ class ArticleController extends Controller
 
     public function destroy(Article $article, Request $request)
     {
+        if ($article->user_id !== Auth::id()) {
+            abort(403);
+        }
+
         $article->delete();
 
         if ($request->wantsJson()) {
             return response()->json(null, 204);
         }
 
-        return redirect()->route('articles.index')->with('message', 'Article deleted successfully');
+        return redirect()->route('articles.index')
+            ->with('message', 'Article deleted successfully');
     }
 }
